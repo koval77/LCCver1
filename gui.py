@@ -2,7 +2,6 @@ from tkinter import *
 from tkinter.ttk import *
 import sql
 import sys
-from guiwidgets.calendar import ttkCalendar
 from guiwidgets.listview import MultiListbox
 from blackbox import _init_toolbar
 from datetime import datetime  # to understanding currentdate
@@ -12,6 +11,7 @@ import tkinter.messagebox as tkMessageBox
 ###Form class
 def label_entry(frmlblent, txtlbl, txtlbl2=None):
     label = Label(frmlblent, text=txtlbl)
+    # The "place" geometry manager organizes widgets in blocks before placing them in the parent widget.
     label.pack(side=LEFT)
     frmlblent._entry = Entry(frmlblent)
     frmlblent._entry.pack(side=LEFT)
@@ -64,6 +64,7 @@ class FormMenu:
         self.master = master
         self.frm_invoices = None
         self.frm_calendar = None
+        #self.master.maxsize(800,600)
 
     def _init_widgets(self):
         # initiate toolbar
@@ -116,21 +117,6 @@ class FormMenu:
     def calc_click(self):
         import os
         os.startfile('calc.exe')
-
-    # calendar-------
-    def calendar_click(self):
-        if self.frm_calendar == None:
-            self.frm_calendar = ttkCalendar(master=self.master)
-        elif self.frm_calendar.flag:  # frm_vehicles that are currently opened
-            print(' window already exists')
-            return 0
-        else:
-            self.frm_calendar = ttkCalendar(master=self.master)
-
-        print(' wait window is called')
-        self.master.wait_window(self.frm_calendar.top)
-        print(' wait window is finished')
-        print(self.frm_calendar.datepicked)
 
     def quit_click(self):
         print("Goodbay")
