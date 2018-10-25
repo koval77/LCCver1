@@ -2,16 +2,16 @@ from tkinter import *
 from tkinter.ttk import *
 import sql
 import sys
-from guiwidgets.calendar import ttkCalendar
 from guiwidgets.listview import MultiListbox
 from blackbox import _init_toolbar
 from datetime import datetime  # to understanding currentdate
 import tkinter.messagebox as tkMessageBox
 
-
+#githubtest
 ###Form class
 def label_entry(frmlblent, txtlbl, txtlbl2=None):
     label = Label(frmlblent, text=txtlbl)
+    # The "place" geometry manager organizes widgets in blocks before placing them in the parent widget.
     label.pack(side=LEFT)
     frmlblent._entry = Entry(frmlblent)
     frmlblent._entry.pack(side=LEFT)
@@ -60,14 +60,15 @@ class FormMenu:
     --++> An Image
     """
 
-    def __init__(self, master):
-        self.master = master
+    def __init__(self, rootfrm):
+        self.rootfrm = rootfrm
         self.frm_invoices = None
-        self.frm_calendar = None
+        #self.master.geometry("800x600")
+        #self.master.maxsize(800,600)
 
     def _init_widgets(self):
         # initiate toolbar
-        self.toolbar = Frame(self.master)
+        self.toolbar = Frame(self.rootfrm)
         lbl0 = Label(self.toolbar, text='LCC').pack(side=LEFT)
         # butcalc=Button(self.toolbar,text='Calc',command=self.calc_click).pack(side=LEFT)
         # butcalendar=Button(self.toolbar,text='Calander',command=self.calendar_click).pack(side=LEFT)
@@ -79,12 +80,12 @@ class FormMenu:
 
         # buttons frame
         # --------------------------------------------
-        self.buttons = Frame(self.master, style="BW.TLabel")
+        self.buttons = Frame(self.rootfrm, style="BW.TLabel")
         # button for vehicles
-        self.btnproducts = Button(self.buttons, command=self.products_click)
+        self.btnvehicles = Button(self.buttons, command=self.vehicle_click)
         self.imgprdt = PhotoImage(file="img/vehicles.gif")
-        self.btnproducts['image'] = self.imgprdt
-        self.btnproducts.pack(side='top')  # , fill='x')
+        self.btnvehicles['image'] = self.imgprdt
+        self.btnvehicles.pack(side='top')  # , fill='x')
         lbl1 = Label(self.buttons, text="Vehicles", style="BW.TLabel").pack()
         # button for invoices
         self.btninvoices = Button(self.buttons, text='Invoices', command=self.invoices_click)
@@ -109,63 +110,44 @@ class FormMenu:
         # background image
         # -------------------------------------------
         self.imgback = PhotoImage(file="img/back.gif")
-        self.lblbackground = Label(self.master, style="BW.TLabel", borderwidth=0)
+        self.lblbackground = Label(self.rootfrm, style="BW.TLabel", borderwidth=0)
         self.lblbackground.pack(side='top')
         self.lblbackground['image'] = self.imgback
-
-    def calc_click(self):
-        import os
-        os.startfile('calc.exe')
-
-    # calendar-------
-    def calendar_click(self):
-        if self.frm_calendar == None:
-            self.frm_calendar = ttkCalendar(master=self.master)
-        elif self.frm_calendar.flag:  # frm_vehicles that are currently opened
-            print(' window already exists')
-            return 0
-        else:
-            self.frm_calendar = ttkCalendar(master=self.master)
-
-        print(' wait window is called')
-        self.master.wait_window(self.frm_calendar.top)
-        print(' wait window is finished')
-        print(self.frm_calendar.datepicked)
 
     def quit_click(self):
         print("Goodbay")
         sys.exit()
 
-    def products_click(self):
+    def vehicle_click(self):
         print("vehicles")
-        self.btnproducts['state'] = DISABLED
+        self.btnvehicles['state'] = DISABLED
         self.btninvoices['state'] = DISABLED
         self.btncustomers['state'] = DISABLED
         self.frm_products = FormProducts()
-        self.master.wait_window(self.frm_products.frame)
-        self.btnproducts['state'] = NORMAL
+        self.rootfrm.wait_window(self.frm_products.frame)
+        self.btnvehicles['state'] = NORMAL
         self.btninvoices['state'] = NORMAL
         self.btncustomers['state'] = NORMAL
 
     def invoices_click(self):
         print("invoices")
-        self.btnproducts['state'] = DISABLED
+        self.btnvehicles['state'] = DISABLED
         self.btninvoices['state'] = DISABLED
         self.btncustomers['state'] = DISABLED
         self.frm_invoices = FormInvoices()
-        self.master.wait_window(self.frm_invoices.frame)
-        self.btnproducts['state'] = NORMAL
+        self.rootfrm.wait_window(self.frm_invoices.frame)
+        self.btnvehicles['state'] = NORMAL
         self.btninvoices['state'] = NORMAL
         self.btncustomers['state'] = NORMAL
 
     def customers_click(self):
         print("customers")
-        self.btnproducts['state'] = DISABLED
+        self.btnvehicles['state'] = DISABLED
         self.btninvoices['state'] = DISABLED
         self.btncustomers['state'] = DISABLED
         self.frm_customers = FormCustomers()
-        self.master.wait_window(self.frm_customers.frame)
-        self.btnproducts['state'] = NORMAL
+        self.rootfrm.wait_window(self.frm_customers.frame)
+        self.btnvehicles['state'] = NORMAL
         self.btninvoices['state'] = NORMAL
         self.btncustomers['state'] = NORMAL
         print("customers alle co dalej?")
@@ -182,9 +164,9 @@ class FormProducts:
         self.frame = Toplevel()
         _init_toolbar(self)
         self._init_gridbox()
-        self.frm_addproduct = None
-        self.frm_editproduct = None
-        self.addproductflag = False
+        self.frm_addvehicle = None
+        self.frm_editvehicle = None
+        self.addvehicleflag = False
 
     def _init_gridbox(self):
         self.mlb = MultiListbox(self.frame, (
@@ -195,15 +177,15 @@ class FormProducts:
 
     # form vehicles add button clicked()
     def btn_add_click(self):
-        if self.addproductflag: return 0
+        if self.addvehicleflag: return 0
         print('not exist')
-        self.addproductflag = True
-        self.frm_addproduct = FormAddProduct()
-        self.frame.wait_window(self.frm_addproduct.frame)
-        if self.frm_addproduct._okbtn_clicked == 1:
-            tbproducts = sql.session._query("select * from products")
-            self.update_mlb(tbproducts)
-        self.addproductflag = False
+        self.addvehicleflag = True
+        self.frm_addvehicle = FormAddProduct()
+        self.frame.wait_window(self.frm_addvehicle.frame)
+        if self.frm_addvehicle._okbtn_clicked == 1:
+            tbvehicle = sql.session._query("select * from products")
+            self.update_mlb(tbvehicle)
+        self.addvehicleflag = False
 
     def btn_edit_click(self):
         print('edit')
@@ -272,10 +254,10 @@ class FormAddProduct:
         self.entry5 = Entry(self.frame)
         self.entry5.grid(row=8, sticky=W + E, columnspan=2)
 
-        self.btn_ok = Button(self.frame, text="OK", width=7, command=self.btnok_click)
+        self.btn_ok = Button(self.frame, text="OK", width=7, command=self.btn_ok_click)
         self.btn_ok.grid(row=9, column=1, sticky=E)
 
-    def btnok_click(self):
+    def btn_ok_click(self):
         items = (self.entry1.get(), self.entry3.get(), int(self.entry2.get()), self.entry4.get(), self.entry5.get())
         if '' in items:
             print('please fill everywhere')
@@ -307,8 +289,8 @@ class FormInvoices:
 
     def _init_gridbox(self):
         self.mlb = MultiListbox(self.frame, (('id #', 5), ('Customer', 25), ('Date', 15), ('Grand Total', 15)))
-        tbproducts = sql.session._query("select * from invoices")
-        self.update_mlb(tbproducts)
+        tbvehicles = sql.session._query("select * from invoices")
+        self.update_mlb(tbvehicles)
         self.mlb.pack(expand=YES, fill=BOTH)
 
     def update_mlb(self, tb):

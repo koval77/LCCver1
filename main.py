@@ -3,8 +3,6 @@
 import gui
 import sqlite3
 from tkinter import ttk
-import tkinter as tk
-
 ###simple password checking method
 def haslo():
         a=input("Admin: ")
