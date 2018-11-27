@@ -68,7 +68,7 @@ class DB_SESSION:
         t=(i_d,)
         self.cur.execute('DELETE FROM vehicles WHERE id=?',t)
         self.conn.commit()
-    def _delete_customer(selfself,i_d):
+    def _delete_customer(self,i_d):
         t=(i_d,)
         self.cur.execute('DELETE FROM customers WHERE cusid=?',t)
         self.conn.commit()
