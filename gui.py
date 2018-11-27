@@ -123,8 +123,8 @@ class FormMenu:
         self.btnvehicles['state'] = DISABLED
         self.btninvoices['state'] = DISABLED
         self.btncustomers['state'] = DISABLED
-        self.frm_products = FormProducts()
-        self.rootfrm.wait_window(self.frm_products.frame)
+        self.frm_vehicles = FormVehicles()
+        self.rootfrm.wait_window(self.frm_vehicles.frame)
         self.btnvehicles['state'] = NORMAL
         self.btninvoices['state'] = NORMAL
         self.btncustomers['state'] = NORMAL
@@ -157,7 +157,7 @@ class FormMenu:
 
 
 #####vehicles class
-class FormProducts:
+class FormVehicles:
     '''The Vehicles window with toolbar and a datagrid of cars'''
 
     def __init__(self):
@@ -170,9 +170,9 @@ class FormProducts:
 
     def _init_gridbox(self):
         self.mlb = MultiListbox(self.frame, (
-        ('id #', 3), ('Product', 25), ('Description', 25), ('Price', 12), ('PlateNumber', 10), ('Year', 12)))
-        tbproducts = sql.session._query("select * from products")
-        self.update_mlb(tbproducts)
+        ('id #', 3), ('vehicle', 25), ('Description', 25), ('Price', 12), ('PlateNumber', 10), ('Year', 12)))
+        tbvehicles = sql.session._query("select * from vehicles")
+        self.update_mlb(tbvehicles)
         self.mlb.pack(expand=YES, fill=BOTH)
 
     # form vehicles add button clicked()
@@ -180,10 +180,10 @@ class FormProducts:
         if self.addvehicleflag: return 0
         print('not exist')
         self.addvehicleflag = True
-        self.frm_addvehicle = FormAddProduct()
+        self.frm_addvehicle = FormAddvehicle()
         self.frame.wait_window(self.frm_addvehicle.frame)
         if self.frm_addvehicle._okbtn_clicked == 1:
-            tbvehicle = sql.session._query("select * from products")
+            tbvehicle = sql.session._query("select * from vehicles")
             self.update_mlb(tbvehicle)
         self.addvehicleflag = False
 
@@ -193,19 +193,19 @@ class FormProducts:
     def btn_del_click(self):
         if self.mlb.item_selected == None: return 'please select first'
         print(self.mlb.item_selected[1])
-        sql.session._delete_product(int(self.mlb.item_selected[1]))
+        sql.session._delete_vehicle(int(self.mlb.item_selected[1]))
         self.mlb.delete(self.mlb.item_selected[0])
         self.mlb.item_selected = None
 
     def btn_find_click(self):
         fnd = self.entryfind.get()
 
-        tbproducts = sql.session._find_products(fnd)
-        self.update_mlb(tbproducts)
+        tbvehicles = sql.session._find_vehicles(fnd)
+        self.update_mlb(tbvehicles)
 
     def update_mlb(self, tb):
         self.mlb.delete(0, END)
-        # tbproducts=sql.session._query(q)
+        # tbvehicles=sql.session._query(q)
         for row in tb:
             self.mlb.insert(END, (int(row[0]),
                                   row[1],
@@ -220,8 +220,8 @@ class FormProducts:
 
 # ---------------Form add vehicle class---------------------
 
-class FormAddProduct:
-    ''' New product, three labels,three textboxes,OK button are added'''
+class FormAddvehicle:
+    ''' New vehicle, three labels,three textboxes,OK button are added'''
 
     def __init__(self):
         self.frame = Toplevel()
@@ -262,7 +262,7 @@ class FormAddProduct:
         if '' in items:
             print('please fill everywhere')
             return 'break'
-        sql.session._add_product(items)
+        sql.session._add_vehicle(items)
 
         self._okbtn_clicked = 1
         print('operator exits clicking ok button')
@@ -382,7 +382,7 @@ class FormAddInvoice:
         # frame4- mlbitems
         self.frame4 = Frame(self.master)
         self.mlbitems = MultiListbox(self.frame4, (('LN#', 4), ('ID#', 6),
-                                                   ('Product', 15), ('Quantity', 5), ('Description', 20),
+                                                   ('vehicle', 15), ('Quantity', 5), ('Description', 20),
                                                    ('UnitPrice', 10), ('Total', 10)))
         self.mlbitems.not_focus()  # don't take_focus
         self.mlbitems.pack(expand=YES, fill=BOTH, side=TOP)
@@ -493,7 +493,7 @@ class LookupList:
         self.update_mlb(txtent)
 
     def update_mlb(self, val):
-        x = self.tblookup._query("select * from products where name like '%" + val + "%' order by name")
+        x = self.tblookup._query("select * from vehicles where name like '%" + val + "%' order by name")
         self.mlb.delete(0, END)
         for row in x:
             self.mlb.insert(END, (int(row[0]),
@@ -561,7 +561,7 @@ class FormCustomers:
         self._init_gridbox()
         self.frm_addcustomers = None
         self.frm_editcustomers = None
-        self.addcustomersflag = False  # frmaddproduct doesn't exist
+        self.addcustomersflag = False  # frmaddvehicle doesn't exist
 
     def _init_gridbox(self):
         self.mlb = MultiListbox(self.frame, (('cusid #', 3), ('cusname', 25), ('cusad', 25)))
@@ -587,7 +587,7 @@ class FormCustomers:
     def btn_del_click(self):
         if self.mlb.item_selected == None: return 'Could you select first one, please?'
         print(self.mlb.item_selected[1])
-        sql.session._delete_product(int(self.mlb.item_selected[1]))
+        sql.session._delete_vehicle(int(self.mlb.item_selected[1]))
         self.mlb.delete(self.mlb.item_selected[0])
         self.mlb.item_selected = None
 
@@ -599,7 +599,7 @@ class FormCustomers:
 
     def update_mlb(self, tb):
         self.mlb.delete(0, END)
-        # tbproducts=sql.session._query(q)
+        # tbvehicles=sql.session._query(q)
         for row in tb:
             self.mlb.insert(END, (int(row[0]),
                                   row[1],
