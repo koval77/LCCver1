@@ -8,9 +8,9 @@ class DB_SESSION:
     def _query(self,q="""SELECT * from invoices"""):
         self.cur.execute(q)
         return self.cur.fetchall()
-    def _find_products(self,val):
+    def _find_vehicles(self,val):
         print (val)
-        self.cur.execute("select * from products where name like '%"+val+"%'")
+        self.cur.execute("select * from vehicles where name like '%"+val+"%'")
         return self.cur.fetchall()
     def _find_customers(self,val):
         print(val)
@@ -22,11 +22,11 @@ class DB_SESSION:
         self.cur.execute('DELETE FROM invoiceitems WHERE invoiceid=?',t)
         self.conn.commit()
 
-    def _add_product(self,items):
-        self.cur.execute('select MAX(id) from products')
+    def _add_vehicle(self,items):
+        self.cur.execute('select MAX(id) from vehicles')
         i_d=self.cur.fetchone()[0] + 1
         items=(i_d,)+items
-        self.cur.execute('INSERT INTO products VALUES (?,?,?,?,?,?)',items)
+        self.cur.execute('INSERT INTO vehicles VALUES (?,?,?,?,?,?)',items)
         self.conn.commit()
 
     def _add_customer(self,items):
@@ -37,15 +37,15 @@ class DB_SESSION:
         self.conn.commit()
 
     def _add_invoice(self,inv,items):
-        #items is a list comprising (id, invoiceid, productid, quantity)
+        #items is a list comprising (id, invoiceid, vehicleid, quantity)
         #inv is a tuple comprising (id,customer, date, amount)
         self.cur.execute('INSERT INTO invoices VALUES (?,?,?,?)',inv)
         for t in items:
             self.cur.execute('INSERT INTO invoiceitems VALUES (?,?,?,?)',t)
         self.conn.commit()
         
-    def _add_product_cmd(self):
-        self.cur.execute('select MAX(id) from products')
+    def _add_vehicle_cmd(self):
+        self.cur.execute('select MAX(id) from vehicles')
         i_d=self.cur.fetchone()[0] + 1
         items=[]
         while True:
@@ -54,19 +54,19 @@ class DB_SESSION:
             desc=input('Vehicle type: ')
             price=input('Price: ')
             t=(i_d,name,desc,int(price))
-            self.cur.execute('insert into products values (?,?,?,?)', t)
+            self.cur.execute('insert into vehicles values (?,?,?,?)', t)
             i_d+=1
         self.conn.commit()
     def _show_invoice(self,i_d):
         t=(i_d,)
         self.cur.execute('''select invoiceitems.id,name,quantity,description,price,price*quantity
-        from invoiceitems,products
-        where invoiceitems.productid=products.id
+        from invoiceitems,vehicles
+        where invoiceitems.vehicleid=vehicles.id
         and invoiceitems.invoiceid=?''', t)
         return self.cur.fetchall()
-    def _delete_product(self,i_d):
+    def _delete_vehicle(self,i_d):
         t=(i_d,)
-        self.cur.execute('DELETE FROM products WHERE id=?',t)
+        self.cur.execute('DELETE FROM vehicles WHERE id=?',t)
         self.conn.commit()
     def _delete_customer(selfself,i_d):
         t=(i_d,)
