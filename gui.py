@@ -109,9 +109,9 @@ class FormMenu:
 
         # background image
         # -------------------------------------------
-        self.imgback = PhotoImage(file="img/back.gif")
+        self.imgback = PhotoImage(file="img/back.gif").subsample(2,3)
         self.lblbackground = Label(self.rootfrm, style="BW.TLabel", borderwidth=0)
-        self.lblbackground.pack(side='top')
+        self.lblbackground.pack(side='top',fill='both',ipadx=30,ipady=1)
         self.lblbackground['image'] = self.imgback
 
     def quit_click(self):

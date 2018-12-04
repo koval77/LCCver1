@@ -10,7 +10,7 @@ def haslo():
         if a=="admin" and p=="admin":
             print("Ok, you can go")
             root=gui.Tk()
-            root.geometry("1600x800+600+300")
+            root.geometry("880x425")
             root['bg'] = 'black'
             frmenu = gui.FormMenu(root)
             # frmmenu._init_menu()
