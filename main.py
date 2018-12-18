@@ -27,4 +27,10 @@ def haslo():
         else:
             print("Nope, you are not the right person")
             raise NameError("Invalid")
+a=gui.Tk()
+a.geometry("880x425")
+# a['bg'] = 'black'
+lg=gui.Login(a)
+lg._init_widget()
+a.mainloop()
 haslo()

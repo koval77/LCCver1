@@ -48,7 +48,41 @@ def label_entry(frmlblent, txtlbl, txtlbl2=None):
              if self.entered='admin':
                  print("password is ok")'''
 
+class Login:
+    def __init__(self, parent):
+        self.parent=parent
+    def check_password(self):
+        username=""
+        password=""
+        while (username != "Jeffnyap" or password != "Iambicycleseller123"):
+                tkMessageBox.showinfo("Failed","Please enter the correct username and password!")
+                self.odp="pop"
+                return self.odp
 
+
+            # tkMessageBox.showinfo("Success", "Login Successful!")
+            # self.destroy()
+            # return
+        #photo
+
+        # photo=PhotoImage(file="login.gif")
+    def _init_widget(self):
+        self.background_label =Label(self.parent,text="London Car Company")
+        # background_label.img=photo
+        self.background_label.place(x=0, y=0, relwidth=1, relheight=1)
+        #photo
+        self.title = Label(self.parent, text="LCC Sale System")
+        self.title.grid(row=2,column=1,sticky="w",padx=600,pady=100)
+        user=Label(self.parent,text="Username:",font=20)
+        user.grid(row=6,column=1,padx=450,sticky="w")
+        username=Entry(self.parent,width=60)
+        username.grid(row=6,column=1,padx=550,sticky="w")
+        passwordLabel=Label(self.parent,text="Password:",font=20)
+        passwordLabel.grid(row=7,column=1,padx=450,sticky="w",pady=20)
+        password=Entry(self.parent,width=60,show="*")
+        password.grid(row=7,column=1,padx=550,sticky="w")
+        btnLogin=Button(self.parent,text="Login",width=10,command=self.check_password())
+        btnLogin.grid(row=8,column=1,sticky="w",padx=670)
 class FormMenu:
     """This is the main form that is shown after operator has login.
     It is built from
