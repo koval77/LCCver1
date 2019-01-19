@@ -6,6 +6,7 @@ from guiwidgets.listview import MultiListbox
 from blackbox import _init_toolbar
 from datetime import datetime  # to understanding currentdate
 import tkinter.messagebox as tkMessageBox
+import  sqlite3
 
 #githubtest
 ###Form class
@@ -51,14 +52,32 @@ def label_entry(frmlblent, txtlbl, txtlbl2=None):
 class Login:
     def __init__(self, parent):
         self.parent=parent
+        self._init_widget()
+        # self.parent=Frame(parent)
+        # self.parent2=Frame(parent2)
+        self.close_button = Button(self.parent, text="Start the application",state=DISABLED, command=self.parent.quit)
+        self.close_button.grid(row=9,column=1,sticky="w",padx=100)
+        # self._init_widget()
     def check_password(self):
         self.username=""
         self.password=""
         self.username=self.us_name_to_function.get()
         self.password=self.us_pass_to_function.get()
         if self.username=="admin":
-            print("udernam is admin !!!")
-            frmenu = FormMenu(Login)
+            print("username is admin !!!")
+            self.close_button['state']=NORMAL
+            # self._init_widget()
+            # root=Tk()
+            # root.geometry("880x425")
+            # root['bg'] = 'black'
+            # frmenu =FormMenu(root)
+            # frmenu._init_widgets()
+            # conn = sqlite3.connect("lcc")
+            # cur = conn.cursor()
+            # cur.execute("select* from invoices")
+            # print(cur.fetchone()[1])
+            # results = cur.fetchall()
+            # root.mainloop()
         else:
             print("username is not admin")
             print("username is:{}".format(self.username))
@@ -68,11 +87,14 @@ class Login:
                 self.odp="pop"
                 return self.odp
 
-
         tkMessageBox.showinfo("Success", "Login Successful!")
-        # self.destroy()
+        #self.destroy()
         return
-        #photo
+
+    def wypad(self):
+        print("Jestem w wypad!!!!!!!!!!!!!")
+        sys.exit()
+        # self.parent.Destroy()
 
         # photo=PhotoImage(file="login.gif")
     def _init_widget(self):
@@ -80,15 +102,13 @@ class Login:
         self.us_name_to_function=StringVar()
         self.us_pass_to_function=StringVar()
         self.background_label =Label(self.parent,text="London Car Company")
-        # background_label.img=photo
         self.background_label.place(x=0, y=0, relwidth=1, relheight=1)
-        #photo
+
         self.title = Label(self.parent, text="LCC Sale System")
         self.title.grid(row=2,column=1,sticky="w",padx=600,pady=100)
-        user=Label(self.parent,text="Username:",font=20)
-        user.grid(row=6,column=1,padx=450,sticky="w")
+        self.user=Label(self.parent,text="Username:",font=20)
+        self.user.grid(row=6,column=1,padx=450,sticky="w")
         self.username=Entry(self.parent,width=60, textvariable=self.us_name_to_function)
-
         self.username.grid(row=6,column=1,padx=550,sticky="w")
         self.passwordLabel=Label(self.parent,text="Password:",font=20)
         self.passwordLabel.grid(row=7,column=1,padx=450,sticky="w",pady=20)
@@ -96,6 +116,10 @@ class Login:
         self.password.grid(row=7,column=1,padx=550,sticky="w")
         self.btnLogin=Button(self.parent,text="Login",width=10,command=self.check_password)
         self.btnLogin.grid(row=8,column=1,sticky="w",padx=670)
+        # self.close_button = Button(parent, text="Start the application",state=DISABLED, command=parent.quit)
+        # self.close_button.grid(row=9,column=1,sticky="w",padx=10)
+
+
 class FormMenu():
     """This is the main form being displayed after operator has login.
     The main parts:
@@ -110,6 +134,7 @@ class FormMenu():
     def __init__(self, rootfrm):
         self.rootfrm = rootfrm
         self.frm_invoices = None
+        self._init_widgets()
         #self.master.geometry("800x600")
         #self.master.maxsize(800,600)
 
