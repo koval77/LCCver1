@@ -5,9 +5,9 @@ import sqlite3
 from tkinter import ttk
 ###simple password checking method
 def haslo():
-        a=input("Admin: ")
-        p=input("Password: ")
-        if a=="admin" and p=="admin":
+        # a=input("Admin: ")
+        # p=input("Password: ")
+        # if a=="admin" and p=="admin":
             print("Ok, you can go")
             root=gui.Tk()
             root.geometry("880x425")
@@ -24,13 +24,14 @@ def haslo():
             if __name__ == "__main__":
         #Example(root).pack(fill="both", expand=True)
                 root.mainloop()
-        else:
-            print("Nope, you are not the right person")
-            raise NameError("Invalid")
-a=gui.Tk()
-a.geometry("880x425")
+        # else:
+        #     print("Nope, you are not the right person")
+        #     raise NameError("Invalid")
+root=gui.Tk()
+root.geometry("880x425")
 # a['bg'] = 'black'
-lg=gui.Login(a)
+lg=gui.Login(root)
 lg._init_widget()
-a.mainloop()
+
+root.mainloop()
 haslo()

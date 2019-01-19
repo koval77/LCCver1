@@ -52,21 +52,33 @@ class Login:
     def __init__(self, parent):
         self.parent=parent
     def check_password(self):
-        username=""
-        password=""
-        while (username != "Jeffnyap" or password != "Iambicycleseller123"):
+        self.username=""
+        self.password=""
+        self.username=self.us_name_to_function.get()
+        self.password=self.us_pass_to_function.get()
+        if self.username=="admin":
+            print("udernam is admin !!!")
+            frmenu = FormMenu(Login)
+        else:
+            print("username is not admin")
+            print("username is:{}".format(self.username))
+
+        while (self.username != "admin" or self.password != "admin"):
                 tkMessageBox.showinfo("Failed","Please enter the correct username and password!")
                 self.odp="pop"
                 return self.odp
 
 
-            # tkMessageBox.showinfo("Success", "Login Successful!")
-            # self.destroy()
-            # return
+        tkMessageBox.showinfo("Success", "Login Successful!")
+        # self.destroy()
+        return
         #photo
 
         # photo=PhotoImage(file="login.gif")
     def _init_widget(self):
+        #Using Tkinter variables
+        self.us_name_to_function=StringVar()
+        self.us_pass_to_function=StringVar()
         self.background_label =Label(self.parent,text="London Car Company")
         # background_label.img=photo
         self.background_label.place(x=0, y=0, relwidth=1, relheight=1)
@@ -75,17 +87,18 @@ class Login:
         self.title.grid(row=2,column=1,sticky="w",padx=600,pady=100)
         user=Label(self.parent,text="Username:",font=20)
         user.grid(row=6,column=1,padx=450,sticky="w")
-        username=Entry(self.parent,width=60)
-        username.grid(row=6,column=1,padx=550,sticky="w")
-        passwordLabel=Label(self.parent,text="Password:",font=20)
-        passwordLabel.grid(row=7,column=1,padx=450,sticky="w",pady=20)
-        password=Entry(self.parent,width=60,show="*")
-        password.grid(row=7,column=1,padx=550,sticky="w")
-        btnLogin=Button(self.parent,text="Login",width=10,command=self.check_password())
-        btnLogin.grid(row=8,column=1,sticky="w",padx=670)
-class FormMenu:
-    """This is the main form that is shown after operator has login.
-    It is built from
+        self.username=Entry(self.parent,width=60, textvariable=self.us_name_to_function)
+
+        self.username.grid(row=6,column=1,padx=550,sticky="w")
+        self.passwordLabel=Label(self.parent,text="Password:",font=20)
+        self.passwordLabel.grid(row=7,column=1,padx=450,sticky="w",pady=20)
+        self.password=Entry(self.parent,width=60,show="*", textvariable=self.us_pass_to_function)
+        self.password.grid(row=7,column=1,padx=550,sticky="w")
+        self.btnLogin=Button(self.parent,text="Login",width=10,command=self.check_password)
+        self.btnLogin.grid(row=8,column=1,sticky="w",padx=670)
+class FormMenu():
+    """This is the main form being displayed after operator has login.
+    The main parts:
     -----------------------
     --++> Label that display LCC.
         --++> Vehicles-   OnClick display FormVehicles,
