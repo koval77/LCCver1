@@ -6,7 +6,8 @@ from guiwidgets.listview import MultiListbox
 from blackbox import _init_toolbar
 from datetime import datetime  # to understanding currentdate
 import tkinter.messagebox as tkMessageBox
-import  sqlite3
+#serialization library
+import pickle
 
 #githubtest
 ###Form class
@@ -22,42 +23,88 @@ def label_entry(frmlblent, txtlbl, txtlbl2=None):
         frmlblent._entry2 = Entry(frmlblent)
         frmlblent._entry2.pack(side=LEFT)
 
+class EmployeeWidget:
+    def __init__(self):
+        self.master=Toplevel()
+        # self.master.protocol
 
-'''class MyFrame(Frame):
-        def __init__(self):
-            Frame.__init__(self)
-            self.text = Label(self, text='Name')
-            self.text.pack()
-            self.name = Entry(self)
-            self.name.pack()
-            self.name.focus_set()
-            self.submit = Button(self, text='Submit', width=10,
-                                 command=self.callback)
-            self.submit.pack()
-            self.entered = Label(self, text='You entered: ')
-            self.entered.pack()
-            vcmd = parent.register(self.validate)
-            self.name = Entry(self, validate='key', validatecommand=(vcmd, '%P'))
-            self.name.pack()
-        def callback(self):
-             self.entered.config(text='You entered: ' + self.name.get())
-             self.name.delete(0, END)
-        def validate(self, P):
-             self.submit.config(state=(NORMAL if P else DISABLED))
-             return True
-        def check(self)
-             if self.entered='admin':
-                 print("password is ok")'''
+class Employee:
+    def __init__(self, name, surname, address, login, password):
+        self.name=name
+        self.surname=surname
+        self.address=address
+        self.login=login
+        self.password=password
+        #dunder or magic methods to change functionality of usual operators or functions, here to to represent objects
+    def __repr__(self):
+        return "Name: "+self.name+" Surname: "+self.surname+" Address: "+self.address+" Login: "+self.login
+    def __str__(self):
+        return self.name+self.surname+self.address+self.login
+
+class Manager(Employee):
+    #implementing class/factory by help of decorators to remove employee from gui
+    @classmethod
+    def addNewEmployeeByManager(cls):
+        return cls(4)
+    @classmethod
+    def removeEmployeeByManager(cls):
+        return cls(6)
+employees_list=[]
+def menu():
+    print("*"*80)
+    print("Pick your choice:\n0.Exit\n1.Add new employee\n2.List employees\n3.Delete employee\n")
+def read_from_pickle():
+    with open('employees3.bin', 'rb') as fileForEmployees:
+        try:
+            while True:
+                yield pickle.load(fileForEmployees)
+        except EOFError:
+            pass
+
+def remove_employee():
+    employees_list_toremove=list(read_from_pickle())
+    who_to_remove=str(input("What is the person login?"))
+    for sack in employees_list_toremove:
+        print("to jest sack:{}".format(sack))
+        if sack.__getattribute__("login")=="zosia":
+            print("znalazlem zosie kurwa!!!!! Zosia lives in{}".format(sack.__getattribute__("address")))
+            gdzie=employees_list_toremove.index(sack)
+            print("I am deleting element of index: {}".format(gdzie))
+        else:
+            print("Zosia is not here:(")
+
+choice=""
+# filnam=('logins')
+while True:
+    menu()
+    choice=str(input("What is your choice?"))
+    if choice=="1":
+        print("Give new employee details: login,password/saving dictionarty")
+        namen=str(input("Name:"))
+        surnamen= str(input("Surname:"))
+        addressn= str(input("Address:"))
+        loginn=str(input("Login:"))
+        passwordn=str(input("Password:"))
+        clerk_next=Employee(namen,surnamen,addressn,loginn,passwordn)
+        employees_list.append(clerk_next)
+        binary_file = open('employees3.bin',mode='ab')
+        my_pickled_mary = pickle.dump(clerk_next, binary_file)
+        binary_file.close()
+    elif choice=="2":
+        read_from_pickle()
+        for item in read_from_pickle():
+            print(repr(item))
+    elif choice=="3":
+        print("What is the login name of the person you want to erase?")
+        remove_employee()
+    else:
+        break
 
 class Login:
     def __init__(self, parent):
         self.parent=parent
+        parent.title("London Car Company Sales System")
         self._init_widget()
-        # self.parent=Frame(parent)
-        # self.parent2=Frame(parent2)
-        self.close_button = Button(self.parent, text="Start the application",state=DISABLED, command=self.parent.quit)
-        self.close_button.grid(row=9,column=1,sticky="w",padx=100)
-        # self._init_widget()
     def check_password(self):
         self.username=""
         self.password=""
@@ -66,18 +113,6 @@ class Login:
         if self.username=="admin":
             print("username is admin !!!")
             self.close_button['state']=NORMAL
-            # self._init_widget()
-            # root=Tk()
-            # root.geometry("880x425")
-            # root['bg'] = 'black'
-            # frmenu =FormMenu(root)
-            # frmenu._init_widgets()
-            # conn = sqlite3.connect("lcc")
-            # cur = conn.cursor()
-            # cur.execute("select* from invoices")
-            # print(cur.fetchone()[1])
-            # results = cur.fetchall()
-            # root.mainloop()
         else:
             print("username is not admin")
             print("username is:{}".format(self.username))
@@ -94,31 +129,35 @@ class Login:
     def wypad(self):
         print("Jestem w wypad!!!!!!!!!!!!!")
         sys.exit()
-        # self.parent.Destroy()
-
-        # photo=PhotoImage(file="login.gif")
     def _init_widget(self):
         #Using Tkinter variables
         self.us_name_to_function=StringVar()
         self.us_pass_to_function=StringVar()
-        self.background_label =Label(self.parent,text="London Car Company")
-        self.background_label.place(x=0, y=0, relwidth=1, relheight=1)
-
-        self.title = Label(self.parent, text="LCC Sale System")
-        self.title.grid(row=2,column=1,sticky="w",padx=600,pady=100)
+        #Widget for group of buttons
+        self.buttonsPanel=LabelFrame(self.parent)
+        self.buttonsPanel.grid(row=4,column=1,columnspan=4,sticky="W")
+        #alternatively could have use parent.destroy maybe (or is it only for pack?)
+        self.close_button = Button(self.buttonsPanel, text="Start the application",state=DISABLED, command=self.parent.quit, width=20)
+        self.close_button.grid(row=5,column=1,sticky="W",padx=10,pady=1)
+        #providing handler for static method from Employee class for removing employee
+        self.removeEmployee = Button(self.buttonsPanel,text="Remove Employee",state=DISABLED, width=20)
+        self.removeEmployee.grid(row=6,column=1,sticky="W",padx=10,pady=1)
+        self.addEmployee = Button(self.buttonsPanel,text="Add new employee",state=DISABLED, width=20)
+        self.addEmployee.grid(row=7,column=1,sticky="W",padx=10,pady=1)
+        self.helpButton = Button(self.buttonsPanel,text="Help",state=DISABLED, width=20)
+        self.helpButton.grid(row=8,column=1,sticky="W",padx=10,pady=1)
+        self.background_label =Label(self.parent,text="London Car Company",font=("Helvetica",20,"bold"))
+        self.background_label.grid(row=2,column=1,sticky="W")
         self.user=Label(self.parent,text="Username:",font=20)
-        self.user.grid(row=6,column=1,padx=450,sticky="w")
-        self.username=Entry(self.parent,width=60, textvariable=self.us_name_to_function)
-        self.username.grid(row=6,column=1,padx=550,sticky="w")
+        self.user.grid(row=3,column=1,padx=450,sticky="w")
+        self.username=Entry(self.parent,width=40, textvariable=self.us_name_to_function)
+        self.username.grid(row=3,column=1,padx=550,sticky="w")
         self.passwordLabel=Label(self.parent,text="Password:",font=20)
-        self.passwordLabel.grid(row=7,column=1,padx=450,sticky="w",pady=20)
-        self.password=Entry(self.parent,width=60,show="*", textvariable=self.us_pass_to_function)
-        self.password.grid(row=7,column=1,padx=550,sticky="w")
+        self.passwordLabel.grid(row=4,column=1,padx=450,sticky="w",pady=5)
+        self.password=Entry(self.parent,width=40,show="*", textvariable=self.us_pass_to_function)
+        self.password.grid(row=4,column=1,padx=550,sticky="w")
         self.btnLogin=Button(self.parent,text="Login",width=10,command=self.check_password)
-        self.btnLogin.grid(row=8,column=1,sticky="w",padx=670)
-        # self.close_button = Button(parent, text="Start the application",state=DISABLED, command=parent.quit)
-        # self.close_button.grid(row=9,column=1,sticky="w",padx=10)
-
+        self.btnLogin.grid(row=5,column=1,sticky="w",padx=620)
 
 class FormMenu():
     """This is the main form being displayed after operator has login.
@@ -130,23 +169,16 @@ class FormMenu():
         --++> Customers-  OnClick display FormCustomers
     --++> An Image
     """
-
     def __init__(self, rootfrm):
         self.rootfrm = rootfrm
         self.frm_invoices = None
         self._init_widgets()
-        #self.master.geometry("800x600")
-        #self.master.maxsize(800,600)
 
     def _init_widgets(self):
         # initiate toolbar
         self.toolbar = Frame(self.rootfrm)
         lbl0 = Label(self.toolbar, text='LCC').pack(side=LEFT)
-        # butcalc=Button(self.toolbar,text='Calc',command=self.calc_click).pack(side=LEFT)
-        # butcalendar=Button(self.toolbar,text='Calander',command=self.calendar_click).pack(side=LEFT)
         self.toolbar.pack(side='top', fill='x')
-        # self.proba=Toplevel(self.master)
-        # self.proba.frame()
         style = Style()
         style.configure("BW.TLabel", foreground="white", background="black")
 
@@ -178,9 +210,7 @@ class FormMenu():
         self.btnquit.pack(side='top')
         lbl4 = Label(self.buttons, text="Quit", style="BW.TLabel").pack()
         self.buttons.pack(side='left', padx=10)
-
-        # background image
-        # -------------------------------------------
+        #Background,subsample changes dimensions
         self.imgback = PhotoImage(file="img/back.gif").subsample(2,3)
         self.lblbackground = Label(self.rootfrm, style="BW.TLabel", borderwidth=0)
         self.lblbackground.pack(side='top',fill='both',ipadx=30,ipady=1)
@@ -224,11 +254,8 @@ class FormMenu():
         self.btncustomers['state'] = NORMAL
         print("customers alle co dalej?")
 
-
 # # #Menu form finished here
-
-
-#####vehicles class
+#####VehiclesForm class
 class FormVehicles:
     '''The Vehicles window with toolbar and a datagrid of cars'''
 
@@ -259,6 +286,7 @@ class FormVehicles:
             self.update_mlb(tbvehicle)
         self.addvehicleflag = False
 
+    #ToDo
     def btn_edit_click(self):
         print('edit')
 
@@ -277,7 +305,6 @@ class FormVehicles:
 
     def update_mlb(self, tb):
         self.mlb.delete(0, END)
-        # tbvehicles=sql.session._query(q)
         for row in tb:
             self.mlb.insert(END, (int(row[0]),
                                   row[1],
@@ -285,10 +312,7 @@ class FormVehicles:
                                   int(row[3]),
                                   row[4],
                                   row[5]))
-
-
 # Vehicle form finishes here
-
 
 # ---------------Form add vehicle class---------------------
 
@@ -305,27 +329,22 @@ class FormAddvehicle:
         self.label1.grid(row=0, sticky=W)
         self.entry1 = Entry(self.frame)
         self.entry1.grid(row=1, column=0)
-
         self.label2 = Label(self.frame, text="Sales Price")
         self.label2.grid(row=1, column=1, sticky=W)
         self.entry2 = Entry(self.frame)
         self.entry2.grid(row=2, column=1)
-
         self.label3 = Label(self.frame, text="Description.")
         self.label3.grid(row=3, sticky=W, columnspan=2)
         self.entry3 = Entry(self.frame)
         self.entry3.grid(row=4, sticky=W + E, columnspan=2)
-
         self.label4 = Label(self.frame, text="PlateNumber.")
         self.label4.grid(row=5, sticky=W, columnspan=2)
         self.entry4 = Entry(self.frame)
         self.entry4.grid(row=6, sticky=W + E, columnspan=2)
-
         self.label5 = Label(self.frame, text="Year.")
         self.label5.grid(row=7, sticky=W, columnspan=2)
         self.entry5 = Entry(self.frame)
         self.entry5.grid(row=8, sticky=W + E, columnspan=2)
-
         self.btn_ok = Button(self.frame, text="OK", width=7, command=self.btn_ok_click)
         self.btn_ok.grid(row=9, column=1, sticky=E)
 
@@ -344,10 +363,7 @@ class FormAddvehicle:
         self._okbtn_clicked = 0
         print('operator exits the screen')
         self.frame.destroy()
-
-
 # AddVehicle for finishes here------------------
-
 
 # -----Invoice form-----------------------
 class FormInvoices:
@@ -404,17 +420,12 @@ class FormInvoices:
     def btn_find_click(self):
         print('find')
 
-
 # Invoice form finishes here-------------------------------
 
-
 # Addinvoice form class------------------------------------------
-
 class FormAddInvoice:
     '''New vehicles, three labels, three textboxes, OK button are added'''
-
     def __init__(self):
-
         self.master = Toplevel()
         self.master.protocol("WM_DELETE_WINDOW", self.callback)  # user quits
         self._init_widgets()
@@ -478,9 +489,7 @@ class FormAddInvoice:
         # self.balanceamount.set('balance:')
         self.lblbal = Label(self.frame5, textvariable=self.balanceamount,
                             foreground='red', font=("Helvetica", 22)).pack(side=LEFT)
-
         self.frame5.pack(side=TOP)
-
         self.btn_ok = Button(self.master, text="OK", width=7, command=self.btnok_click)
         self.btn_ok.pack(side=TOP)
 
@@ -607,12 +616,10 @@ class FormEditInvoice:
     def init_entryboxes(self, val):
         self.frame1._entry.insert(END, val[0])
         self.frame1._entry['state'] = DISABLED
-
         self.frame2._entry.insert(END, val[1])
         self.frame2._entry2.insert(END, val[2])
         self.frame2._entry['state'] = DISABLED
         self.frame2._entry2['state'] = DISABLED
-
         self.frame4._entry.insert(END, val[3])
         self.frame4._entry['state'] = DISABLED
 
@@ -626,7 +633,6 @@ class FormEditInvoice:
 ###Class of the FormCustomer
 class FormCustomers:
     # The Vehicles window with toolbar and a datagrid
-
     def __init__(self):
         self.frame = Toplevel()
         _init_toolbar(self)

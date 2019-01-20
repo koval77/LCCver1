@@ -1,16 +1,15 @@
-#from binascii import a2b_qp
-# final from 20/09/2018. To jest ostateczna wersja
 import gui
 import sqlite3
 from tkinter import ttk
-###simple password checking method
+#using magic method for printing tkinter version
+print("Version of ttk wrapper is: {}".format(ttk.__version__))
 def haslo():
             print("Ok, you can go")
+            #Here I had to use Top level because tkinter doesn't allow to run more than one instances of Tk() running simultounesly
             root2=gui.Toplevel()
-            root2.geometry("880x425")
+            root2.geometry("880x425+440+212")
             root2['bg'] = 'black'
             frmenu = gui.FormMenu(root2)
-            # frmenu._init_widgets()
             conn = sqlite3.connect("lcc")
             cur = conn.cursor()
             cur.execute("select* from invoices")
@@ -18,12 +17,12 @@ def haslo():
             results = cur.fetchall()
             if __name__ == "__main__":
                 root2.mainloop()
-
+#Tk() is the main widget of the application
 root=gui.Tk()
-# root2=gui.Tk()
-root.geometry("880x425")
+# Make window 880x425 and place at position 440,212
+root.geometry("880x425+440+212")
+root.maxsize(800,600)
 lg=gui.Login(root)
-# lg.pack()
-# lg._init_widget()
+#main loop of the program that keeps repeating
 root.mainloop()
 haslo()
