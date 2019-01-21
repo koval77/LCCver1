@@ -37,9 +37,9 @@ class Employee:
         self.password=password
         #dunder or magic methods to change functionality of usual operators or functions, here to to represent objects
     def __repr__(self):
-        return "Name: "+self.name+" Surname: "+self.surname+" Address: "+self.address+" Login: "+self.login
+        return "Name: "+self.name+" Surname: "+self.surname+" Address: "+self.address+" Login: "+self.login+" Password: "+self.password
     def __str__(self):
-        return self.name+self.surname+self.address+self.login
+        return self.name+self.surname+self.address+self.login+self.password
 
 class Manager(Employee):
     #implementing class/factory by help of decorators to remove employee from gui
@@ -105,6 +105,27 @@ class Login:
         self.parent=parent
         parent.title("London Car Company Sales System")
         self._init_widget()
+    def check_password2(self):
+        self.username=""
+        self.password=""
+        self.username=self.us_name_to_function.get()
+        self.password=self.us_pass_to_function.get()
+        self.credentialCheck=False
+        listOfStaff=list(read_from_pickle())
+        print("(debugging) listOfStaff is :{}".format(listOfStaff))
+        for people in listOfStaff:
+            if people.__getattribute__("login")==self.username and people.__getattribute__("password")==self.password:
+                print("login and password is correct")
+                self.close_button['state']=NORMAL
+                tkMessageBox.showinfo("Success", "Login Successful!")
+                self.credentialCheck=True
+                break
+            else:
+                print("username is not admin")
+                print("username is:{}".format(self.username))
+        if self.credentialCheck==False:
+         tkMessageBox.showinfo("Failed","Please enter the correct username and password!")
+
     def check_password(self):
         self.username=""
         self.password=""
@@ -156,7 +177,7 @@ class Login:
         self.passwordLabel.grid(row=4,column=1,padx=450,sticky="w",pady=5)
         self.password=Entry(self.parent,width=40,show="*", textvariable=self.us_pass_to_function)
         self.password.grid(row=4,column=1,padx=550,sticky="w")
-        self.btnLogin=Button(self.parent,text="Login",width=10,command=self.check_password)
+        self.btnLogin=Button(self.parent,text="Login",width=10,command=self.check_password2)
         self.btnLogin.grid(row=5,column=1,sticky="w",padx=620)
 
 class FormMenu():
