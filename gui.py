@@ -49,20 +49,27 @@ class Manager(Employee):
     @classmethod
     def removeEmployeeByManager(cls):
         return cls(6)
+    @staticmethod
+    def probaStatic():
+        print("I am in static!!")
+        return "return from static"
+    #by adding decorator I am creating static method for managers for serialisation
+    @staticmethod
+    def read_from_pickle():
+        with open('employees3.bin', 'rb') as fileForEmployees:
+            try:
+                while True:
+                    yield pickle.load(fileForEmployees)
+            except EOFError:
+                pass
+
 employees_list=[]
 def menu():
     print("*"*80)
     print("Pick your choice:\n0.Exit\n1.Add new employee\n2.List employees\n3.Delete employee\n")
-def read_from_pickle():
-    with open('employees3.bin', 'rb') as fileForEmployees:
-        try:
-            while True:
-                yield pickle.load(fileForEmployees)
-        except EOFError:
-            pass
 
 def remove_employee():
-    employees_list_toremove=list(read_from_pickle())
+    employees_list_toremove=list(Manager.read_from_pickle())
     who_to_remove=str(input("What is the person login?"))
     for sack in employees_list_toremove:
         print("to jest sack:{}".format(sack))
@@ -91,32 +98,89 @@ while True:
         my_pickled_mary = pickle.dump(clerk_next, binary_file)
         binary_file.close()
     elif choice=="2":
-        read_from_pickle()
-        for item in read_from_pickle():
+        Manager.read_from_pickle()
+        for item in Manager.read_from_pickle():
             print(repr(item))
+            print(type(item))
     elif choice=="3":
         print("What is the login name of the person you want to erase?")
         remove_employee()
     else:
         break
 
+
+class StaffTableWidget:
+    def __init__(self,dad):
+        self.dad=dad
+        self._init_widget()
+        self.populateTable()
+    def _init_widget(self):
+        self.staffTable=Toplevel(self.dad,width=20,height=100)
+        self.myTree=Treeview(self.staffTable,columns=("ID","Name","Surname","Address","Login","Delete"))
+        self.myTree.heading('#0', text='ID')
+        self.myTree.heading('#1', text='Name')
+        self.myTree.heading('#2', text='Surname')
+        self.myTree.heading('#3', text='Address')
+        self.myTree.heading('#4', text='Login')
+        self.myTree.heading('#5', text='Delete')
+        self.myTree.column('#0', stretch=YES)
+        self.myTree.column('#1', stretch=YES)
+        self.myTree.column('#2', stretch=YES)
+        self.myTree.column('#3', stretch=YES)
+        self.myTree.column('#4', stretch=YES)
+        self.myTree.column('#5', stretch=YES)
+        self.myTree.pack()
+        # self.myTree.grid(row=4, columnspan=4, sticky='nsew')
+        # self.treeview = self.myTree
+        # Initialize the counter
+        self.i = 0
+    def populateTable(self):
+        self.staffList=list(Manager.read_from_pickle())
+        self.myTree.insert('','end',values=("Alfred","Kowlaksi","Prucha 7","alfi"))
+        self.myTree.insert('','end',values=("Jim","Rotten","nw16as","jim"))
+        for entry in self.staffList:
+            self.myTree.insert('','end',values=(entry.__getattribute__("name"),entry.__getattribute__("surname"),
+                                                entry.__getattribute__("address"),entry.__getattribute__("login")))
+
 class Login:
     def __init__(self, parent):
         self.parent=parent
         parent.title("London Car Company Sales System")
+        s=Style()
+        #applying the chosen theme to all existing widgets
+        s.theme_use(themename='clam')
         self._init_widget()
-    def check_password2(self):
+    @staticmethod
+    def read_from_pickleStatic():
+        with open('employees3.bin', 'rb') as fileForEmployees:
+            try:
+                while True:
+                    yield pickle.load(fileForEmployees)
+            except EOFError:
+                pass
+
+
+    def check_password(self):
         self.username=""
         self.password=""
         self.username=self.us_name_to_function.get()
         self.password=self.us_pass_to_function.get()
         self.credentialCheck=False
-        listOfStaff=list(read_from_pickle())
+        #creating list of objects from Employee class (and Manager subclass) from pickle
+        listOfStaff=list(Manager.read_from_pickle())
         print("(debugging) listOfStaff is :{}".format(listOfStaff))
         for people in listOfStaff:
             if people.__getattribute__("login")==self.username and people.__getattribute__("password")==self.password:
                 print("login and password is correct")
+                #if credentials are correct, enable starting application button
                 self.close_button['state']=NORMAL
+                #assign to bool variable isinstance builtins function. It will be true if object is of class Manager
+                checkForRole=isinstance(people,Manager)
+                #if credentials belongs to manager, the group of corresponding buttons will be enabled
+                if checkForRole:
+                    self.addEmployee['state']=NORMAL
+                    self.removeEmployee['state']=NORMAL
+                    self.helpButton['state']=NORMAL
                 tkMessageBox.showinfo("Success", "Login Successful!")
                 self.credentialCheck=True
                 break
@@ -126,7 +190,7 @@ class Login:
         if self.credentialCheck==False:
          tkMessageBox.showinfo("Failed","Please enter the correct username and password!")
 
-    def check_password(self):
+    def check_passwordOldVersion(self):
         self.username=""
         self.password=""
         self.username=self.us_name_to_function.get()
@@ -150,18 +214,23 @@ class Login:
     def wypad(self):
         print("Jestem w wypad!!!!!!!!!!!!!")
         sys.exit()
+
+    #Method for initialisating widget for employees table
+    def listStaffTopWidget(self):
+        self.staffTable=StaffTableWidget(self.parent)
+
     def _init_widget(self):
         #Using Tkinter variables
         self.us_name_to_function=StringVar()
         self.us_pass_to_function=StringVar()
-        #Widget for group of buttons
+        #Widget for group of child buttons
         self.buttonsPanel=LabelFrame(self.parent)
         self.buttonsPanel.grid(row=4,column=1,columnspan=4,sticky="W")
         #alternatively could have use parent.destroy maybe (or is it only for pack?)
         self.close_button = Button(self.buttonsPanel, text="Start the application",state=DISABLED, command=self.parent.quit, width=20)
         self.close_button.grid(row=5,column=1,sticky="W",padx=10,pady=1)
-        #providing handler for static method from Employee class for removing employee
-        self.removeEmployee = Button(self.buttonsPanel,text="Remove Employee",state=DISABLED, width=20)
+        #providing handler for method which will create staff table widget. Disabled by default.
+        self.removeEmployee = Button(self.buttonsPanel,text=" Employee List",state=DISABLED, width=20, command=self.listStaffTopWidget)
         self.removeEmployee.grid(row=6,column=1,sticky="W",padx=10,pady=1)
         self.addEmployee = Button(self.buttonsPanel,text="Add new employee",state=DISABLED, width=20)
         self.addEmployee.grid(row=7,column=1,sticky="W",padx=10,pady=1)
@@ -177,11 +246,11 @@ class Login:
         self.passwordLabel.grid(row=4,column=1,padx=450,sticky="w",pady=5)
         self.password=Entry(self.parent,width=40,show="*", textvariable=self.us_pass_to_function)
         self.password.grid(row=4,column=1,padx=550,sticky="w")
-        self.btnLogin=Button(self.parent,text="Login",width=10,command=self.check_password2)
+        self.btnLogin=Button(self.parent,text="Login",width=10,command=self.check_password)
         self.btnLogin.grid(row=5,column=1,sticky="w",padx=620)
 
 class FormMenu():
-    """This is the main form being displayed after operator has login.
+    """This is the main form being displayed after operator has valid credentials after clicking Start Application button
     The main parts:
     -----------------------
     --++> Label that display LCC.
@@ -397,7 +466,7 @@ class FormInvoices:
         self.editinvoiceflag = False
 
     def _init_gridbox(self):
-        self.mlb = MultiListbox(self.frame, (('id #', 5), ('Customer', 25), ('Date', 15), ('Grand Total', 15)))
+        self.mlb = MultiListbox(self.frame, (('id #', 5), ('Customer', 25), ('Date', 15), ('Total Amount', 15)))
         tbvehicles = sql.session._query("select * from invoices")
         self.update_mlb(tbvehicles)
         self.mlb.pack(expand=YES, fill=BOTH)
