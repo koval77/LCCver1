@@ -29,19 +29,50 @@ class EmployeeWidget:
         # self.master.protocol
 
 class Employee:
-    def __init__(self, name, surname, address, login, password):
+    #class variable storing how many people are working there
+    # staff_count=0
+    # staff_list=[]
+    def __init__(self, name, surname, address, login, password,salary):
         self.name=name
         self.surname=surname
         self.address=address
         self.login=login
         self.password=password
+        self.salary=salary
+
+        #increments number of workers after each initialisation
+        # Employee.staff_count+=1
+        # Employee.staff_list.append(self)
         #dunder or magic methods to change functionality of usual operators or functions, here to to represent objects
     def __repr__(self):
-        return "Name: "+self.name+" Surname: "+self.surname+" Address: "+self.address+" Login: "+self.login+" Password: "+self.password
+        return "Name: "+self.name+" Surname: "+self.surname+" Address: "+self.address+" Login: "+self.login+" Password: "+self.password+" Salary: "+self.salary
     def __str__(self):
-        return self.name+self.surname+self.address+self.login+self.password
+        return self.name+self.surname+self.address+self.login+self.password+self.salary
+
+    # def sack(self):
+    #     print("{} is being sacked!".format(self.name))
+    #
+    #     Employee.staff_count -= 1
+    #
+    #     if Employee.staff_count == 0:
+    #         print("{} was the last one.".format(self.name))
+    #     else:
+    #         print("There are still {:d} people working.".format(
+    #             Employee.staff_count))
+    #
+    # @classmethod
+    # def how_many(cls):
+    #     """Prints the current workforce number."""
+    #     print("We have {:d} robots.".format(cls.staff_count))
 
 class Manager(Employee):
+    # def __init__(self):
+    #     super().staff_count=list(Manager.read_from_pickle())+super().staff_count+1
+    # self.department=departmdent
+    # workersList=list(Manager.read_from_pickle())
+
+    def add_bonus(self,to_who,amount):
+        pass
     #implementing class/factory by help of decorators to remove employee from gui
     @classmethod
     def addNewEmployeeByManager(cls):
@@ -50,18 +81,59 @@ class Manager(Employee):
     def removeEmployeeByManager(cls):
         return cls(6)
     @staticmethod
-    def probaStatic():
-        print("I am in static!!")
-        return "return from static"
+    def update_record(employesss):
+        # print("Give new employee details: login,password/saving dictionarty")
+        # namen=str(input("Name:"))
+        # surnamen= str(input("Surname:"))
+        # addressn= str(input("Address:"))
+        # loginn=str(input("Login:"))
+        # passwordn=str(input("Password:"))
+        # employesss=Employee(namen,surnamen,addressn,loginn,passwordn)
+        # employees_list.append(employesss)
+        binary_file = open('workerlist.bin',mode='wb')
+        pickle_dump_update = pickle.dump(employesss, binary_file)
+        binary_file.close()
+
+    @staticmethod
+    def restlist():
+        mng1=Manager("Bill","Gates","USa","bill","bill","30000")
+        binary_file = open('staff.bin',mode='wb')
+        my_pickled_mary = pickle.dump(mng1, binary_file)
+        binary_file.close()
+
+    @staticmethod
+    def pickle_updated_list_to_file(x):
+        # tym=list(Manager.read_from_pickle())
+        # print("tim list before pop: {}".format(tym))
+        # tym.pop()
+        # print("tim list after pop: {}".format(tym))
+        for it in x:
+            binary_file = open('staff.bin',mode='ab')
+            my_pickled_mary = pickle.dump(it, binary_file)
+        binary_file.close()
+
+
     #by adding decorator I am creating static method for managers for serialisation
     @staticmethod
     def read_from_pickle():
-        with open('employees3.bin', 'rb') as fileForEmployees:
+        with open('staff.bin', 'rb') as fileForEmployees:
             try:
                 while True:
                     yield pickle.load(fileForEmployees)
             except EOFError:
                 pass
+
+    @staticmethod
+    def write_object_to_file(who):
+        binary_file = open('staff.bin',mode='wb')
+        my_pickled_mary = pickle.dump(who, binary_file)
+        binary_file.close()
+
+    @staticmethod
+    def append_object_to_file(who):
+        binary_file = open('staff.bin',mode='ab')
+        my_pickled_mary = pickle.dump(who, binary_file)
+        binary_file.close()
 
 employees_list=[]
 def menu():
@@ -74,32 +146,43 @@ def remove_employee():
     for sack in employees_list_toremove:
         print("to jest sack:{}".format(sack))
         if sack.__getattribute__("login")=="zosia":
-            print("znalazlem zosie kurwa!!!!! Zosia lives in{}".format(sack.__getattribute__("address")))
+            print("znalazlem zosie!!!!! Zosia lives in{}".format(sack.__getattribute__("address")))
             gdzie=employees_list_toremove.index(sack)
             print("I am deleting element of index: {}".format(gdzie))
         else:
             print("Zosia is not here:(")
 
 choice=""
+# mng1=Manager("Bill","Gates","USa","bill","bill","30000")
+# clr1=Employee("Jarek","Cash","PL65","jar","jar","600")
+# clr2=Employee("Zocha","Zolza","N17as","zocha","zocha","3000")
+# employees_list.append(mng1)
+# employees_list.append(clr1)
+# employees_list.append(clr2)
+# Manager.pickle_updated_list_to_file(employees_list)
+# Manager.write_object_to_file(mng1)
+# Manager.append_object_to_file(clr1)
+# Manager.append_object_to_file(clr2)
 # filnam=('logins')
 while True:
     menu()
+    print("type of manager.readfrompicke{}".format(Manager.read_from_pickle()))
     choice=str(input("What is your choice?"))
     if choice=="1":
-        print("Give new employee details: login,password/saving dictionarty")
+        print("Give new employee details: Name,Surname,Address,Login,Password,Salary")
         namen=str(input("Name:"))
         surnamen= str(input("Surname:"))
         addressn= str(input("Address:"))
         loginn=str(input("Login:"))
         passwordn=str(input("Password:"))
-        clerk_next=Employee(namen,surnamen,addressn,loginn,passwordn)
+        salaryn=input("Salary:")
+        clerk_next=Employee(namen,surnamen,addressn,loginn,passwordn,salaryn)
         employees_list.append(clerk_next)
-        binary_file = open('employees3.bin',mode='ab')
-        my_pickled_mary = pickle.dump(clerk_next, binary_file)
-        binary_file.close()
+        Manager.pickle_updated_list_to_file(employees_list)
     elif choice=="2":
-        Manager.read_from_pickle()
-        for item in Manager.read_from_pickle():
+        tym=list(Manager.read_from_pickle())
+        print("tym list is: {}".format(tym))
+        for item in tym:
             print(repr(item))
             print(type(item))
     elif choice=="3":
@@ -108,39 +191,139 @@ while True:
     else:
         break
 
-
 class StaffTableWidget:
     def __init__(self,dad):
         self.dad=dad
         self._init_widget()
         self.populateTable()
+        self.colors()
     def _init_widget(self):
+        self.staffList=list(Manager.read_from_pickle())
         self.staffTable=Toplevel(self.dad,width=20,height=100)
-        self.myTree=Treeview(self.staffTable,columns=("ID","Name","Surname","Address","Login","Delete"))
-        self.myTree.heading('#0', text='ID')
-        self.myTree.heading('#1', text='Name')
-        self.myTree.heading('#2', text='Surname')
-        self.myTree.heading('#3', text='Address')
-        self.myTree.heading('#4', text='Login')
-        self.myTree.heading('#5', text='Delete')
-        self.myTree.column('#0', stretch=YES)
-        self.myTree.column('#1', stretch=YES)
-        self.myTree.column('#2', stretch=YES)
+        self.staffCountLbl=Label(self.staffTable,text="Workers available")
+        self.staffCountLbl.pack(padx=5,pady=5,side=TOP)
+        self.staffCountLbl2=Label(self.staffTable,text=len(self.staffList))
+        self.staffCountLbl2.pack(padx=5,pady=5,side=TOP)
+        self.forNewGuys=LabelFrame(self.staffTable)
+        self.forNewGuys.pack(padx=5,pady=5,side=RIGHT)
+        self.entryName=Entry(self.forNewGuys)
+        self.entryName.pack(padx=5,pady=5,side=TOP)
+        self.entrySurname=Entry(self.forNewGuys)
+        self.entrySurname.pack(padx=5,pady=5,side=TOP)
+        self.entryAddress=Entry(self.forNewGuys)
+        self.entryAddress.pack(padx=5,pady=5,side=TOP)
+        self.entryLogin=Entry(self.forNewGuys)
+        self.entryLogin.pack(padx=5,pady=5,side=TOP)
+        self.entryPass=Entry(self.forNewGuys)
+        self.entryPass.pack(padx=5,pady=5,side=TOP)
+        self.entrySalary=Entry(self.forNewGuys)
+        self.entrySalary.pack(padx=5,pady=5,side=TOP)
+        self.forbuttons=LabelFrame(self.staffTable)
+        self.forbuttons.pack(padx=5,pady=5,side=RIGHT)
+        self.newEmpbtn=Button(self.forbuttons,text="New employee",command=self.newEmp)
+        self.newEmpbtn.pack(padx=5,side=TOP)
+        self.newMngbtn=Button(self.forbuttons,text="New manager",command=self.newMng)
+        self.newMngbtn.pack(padx=5,side=TOP)
+        self.delemplbtn=Button(self.forbuttons,text="Delete employee",command=self.delete)
+        self.delemplbtn.pack(padx=5,side=TOP)
+        self.savebtn=Button(self.forbuttons,text="Save Changes",command=self.updateRec)
+        self.savebtn.pack(padx=5,side=TOP)
+        self.myTree=Treeview(self.staffTable,columns=("ID","Name","Surname","Address","Login","Salary","Delete"))
+        self.myTree.heading('#0')
+        self.myTree.heading('#1', text='ID')
+        self.myTree.heading('#2', text='Name')
+        self.myTree.heading('#3', text='Surname')
+        self.myTree.heading('#4', text='Address')
+        self.myTree.heading('#5', text='Login')
+        self.myTree.heading('#6', text='Salary')
+        # self.myTree.heading('#7', text='Delete')
+        self.myTree.column('#0', width=2)
+        self.myTree.column('#1', stretch=YES, width=50)
+        self.myTree.column('#2', stretch=YES, width=100)
         self.myTree.column('#3', stretch=YES)
         self.myTree.column('#4', stretch=YES)
         self.myTree.column('#5', stretch=YES)
+        self.myTree.column('#6', stretch=YES)
+        # self.myTree.column('#7', stretch=YES)
         self.myTree.pack()
         # self.myTree.grid(row=4, columnspan=4, sticky='nsew')
         # self.treeview = self.myTree
         # Initialize the counter
         self.i = 0
     def populateTable(self):
-        self.staffList=list(Manager.read_from_pickle())
-        self.myTree.insert('','end',values=("Alfred","Kowlaksi","Prucha 7","alfi"))
-        self.myTree.insert('','end',values=("Jim","Rotten","nw16as","jim"))
+        # self.staffList=list(Manager.read_from_pickle())
+        # self.myTree.insert('','end',values=("Alfred","Kowlaksi","Prucha 7","alfi"))
+        # self.myTree.insert('','end',values=("Jim","Rotten","nw16as","jim"))
+        self.ind=0
         for entry in self.staffList:
-            self.myTree.insert('','end',values=(entry.__getattribute__("name"),entry.__getattribute__("surname"),
-                                                entry.__getattribute__("address"),entry.__getattribute__("login")))
+            self.ind=self.ind+1
+            #I am using floor division to divide entries on odd and even ones tags.
+            if self.ind%2!=0:
+                self.myTree.insert('','end',values=(self.ind,entry.__getattribute__("name"),entry.__getattribute__("surname"),
+                                                entry.__getattribute__("address"),entry.__getattribute__("login"),
+                                                    entry.__getattribute__("salary")),tags = ('oddrow',))
+            else:
+                self.myTree.insert('','end',values=(self.ind,entry.__getattribute__("name"),entry.__getattribute__("surname"),
+                                                    entry.__getattribute__("address"),entry.__getattribute__("login"),
+                                                    entry.__getattribute__("salary")),tags = ('evenrow',))
+    def colors(self):
+        self.myTree.tag_configure("evenrow",background='white',foreground='black')
+        self.myTree.tag_configure("oddrow",background='grey',foreground='black')
+    def delete(self):
+        selected_item = self.myTree.selection()[0] ## get selected item
+        # print("select_item 1: {}".format(selected_item()[1]))
+        for item in self.myTree.selection():
+            self.item_text=self.myTree.item(item,"values")
+            print(self.item_text)
+        self.indtodel=int(self.item_text[0])-1
+        for i in range(len(selected_item[3])):
+            print("this was in selected items: {}".format(selected_item[3][i]))
+        self.myTree.delete(selected_item)
+        self.staffList.pop(self.indtodel)
+        print("stafflist after pop: {}".format(self.staffList))
+        Manager.restlist()
+        Manager.pickle_updated_list_to_file(self.staffList)
+        print("Deleting from table")
+    def newEmp(self):
+        self.nname=self.entryName.get()
+        self.nsurname=self.entrySurname.get()
+        self.naddress=self.entryAddress.get()
+        self.nlogin=self.entryLogin.get()
+        self.npassword=self.entryPass.get()
+        self.nsalary=self.entrySalary.get()
+        empl=Employee(self.nname,self.nsurname,self.naddress,self.nlogin,self.npassword,self.nsalary)
+        if self.ind%2!=0:
+            self.myTree.insert('','end',values=(self.ind,empl.__getattribute__("name"),empl.__getattribute__("surname"),
+                                                empl.__getattribute__("address"),empl.__getattribute__("login"),
+                                                empl.__getattribute__("salary")),tags = ('oddrow',))
+        else:
+            self.myTree.insert('','end',values=(self.ind,empl.__getattribute__("name"),empl.__getattribute__("surname"),
+                                                empl.__getattribute__("address"),empl.__getattribute__("login"),
+                                                empl.__getattribute__("salary")),tags = ('evenrow',))
+        self.staffList.append(empl)
+        Manager.restlist()
+        Manager.pickle_updated_list_to_file(self.staffList)
+        print("stafflist after adding new employee: {}".format(self.staffList))
+        print("lenght of stafflist after adding new employee: {}".format(len(self.staffList)))
+    def newMng(self):
+        pass
+
+
+    '''myTree.get_children gives the row id. what i did was get the row id from a loop, 
+    then use the id withing myTree.set(id) to get a dictionary of the values. and format the output from there.
+    '''
+    def updateRec(self):
+
+        self.list = " "
+        self.info = self.myTree.get_children()
+        for i in self.info:
+            self.info2 = self.myTree.set(i)
+            for a in self.info2:
+                print(a,":",self.info2[a])
+                self.list=self.list + a +": "+ self.info2[a]+'\n'
+
+        self.msg ="{} \n" .format(self.list)
+        print("list from updatereC: {}".format(self.list))
 
 class Login:
     def __init__(self, parent):
@@ -150,15 +333,6 @@ class Login:
         #applying the chosen theme to all existing widgets
         s.theme_use(themename='clam')
         self._init_widget()
-    @staticmethod
-    def read_from_pickleStatic():
-        with open('employees3.bin', 'rb') as fileForEmployees:
-            try:
-                while True:
-                    yield pickle.load(fileForEmployees)
-            except EOFError:
-                pass
-
 
     def check_password(self):
         self.username=""
@@ -168,7 +342,7 @@ class Login:
         self.credentialCheck=False
         #creating list of objects from Employee class (and Manager subclass) from pickle
         listOfStaff=list(Manager.read_from_pickle())
-        print("(debugging) listOfStaff is :{}".format(listOfStaff))
+        # print("(debugging) listOfStaff is :{}".format(listOfStaff))
         for people in listOfStaff:
             if people.__getattribute__("login")==self.username and people.__getattribute__("password")==self.password:
                 print("login and password is correct")
@@ -185,7 +359,7 @@ class Login:
                 self.credentialCheck=True
                 break
             else:
-                print("username is not admin")
+                print("Incorrect details")
                 print("username is:{}".format(self.username))
         if self.credentialCheck==False:
          tkMessageBox.showinfo("Failed","Please enter the correct username and password!")
