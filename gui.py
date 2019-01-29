@@ -1,16 +1,13 @@
-from tkinter import *
-from tkinter.ttk import *
-import sql
-import sys
+from tkinter import *  # importing Tkinter GUI
+from tkinter.ttk import *  # importing theme tool kit
+import sql  # imports sql which imports sqlite3
+import sys  # sys library, used later for finishing application after clicking quit button
 from guiwidgets.listview import MultiListbox
-from blackbox import _init_toolbar
-from datetime import datetime  # to understanding currentdate
-import tkinter.messagebox as tkMessageBox
-#serialization library
-import pickle
+from blackbox import _init_toolbar # module for toolbar
+from datetime import datetime  # to understanding current date
+import tkinter.messagebox as tkMessageBox # for displaying messages
+import pickle  # serialization library
 
-#githubtest
-###Form class
 def label_entry(frmlblent, txtlbl, txtlbl2=None):
     label = Label(frmlblent, text=txtlbl)
     # The "place" geometry manager organizes widgets in blocks before placing them in the parent widget.
@@ -23,15 +20,13 @@ def label_entry(frmlblent, txtlbl, txtlbl2=None):
         frmlblent._entry2 = Entry(frmlblent)
         frmlblent._entry2.pack(side=LEFT)
 
-class EmployeeWidget:
-    def __init__(self):
-        self.master=Toplevel()
-        # self.master.protocol
-
 class Employee:
-    #class variable storing how many people are working there
-    # staff_count=0
-    # staff_list=[]
+    """Every time new Employee object is instantiated new element is added to the list.
+     Apart from following object variables for details there are two magic methods for overloading representations of employee objects
+      (I have used them to debug program in the console)."""
+    #class variables storing how many new workers are added
+    staffAdded_count=0
+    staffAdded_list=[]
     def __init__(self, name, surname, address, login, password,salary):
         self.name=name
         self.surname=surname
@@ -39,16 +34,14 @@ class Employee:
         self.login=login
         self.password=password
         self.salary=salary
-
         #increments number of workers after each initialisation
-        # Employee.staff_count+=1
-        # Employee.staff_list.append(self)
+        Employee.staffAdded_count+=1
+        Employee.staffAdded_list.append(self)
         #dunder or magic methods to change functionality of usual operators or functions, here to to represent objects
     def __repr__(self):
         return "Name: "+self.name+" Surname: "+self.surname+" Address: "+self.address+" Login: "+self.login+" Password: "+self.password+" Salary: "+self.salary
     def __str__(self):
         return self.name+self.surname+self.address+self.login+self.password+self.salary
-
     # def sack(self):
     #     print("{} is being sacked!".format(self.name))
     #
@@ -66,12 +59,13 @@ class Employee:
     #     print("We have {:d} robots.".format(cls.staff_count))
 
 class Manager(Employee):
+    """Managers are employers that after login will have access to managment options"""
     # def __init__(self):
     #     super().staff_count=list(Manager.read_from_pickle())+super().staff_count+1
     # self.department=departmdent
     # workersList=list(Manager.read_from_pickle())
-
-    def add_bonus(self,to_who,amount):
+    # todo
+    def __add_bonus(self,to_who,amount):
         pass
     #implementing class/factory by help of decorators to remove employee from gui
     @classmethod
@@ -80,22 +74,10 @@ class Manager(Employee):
     @classmethod
     def removeEmployeeByManager(cls):
         return cls(6)
-    @staticmethod
-    def update_record(employesss):
-        # print("Give new employee details: login,password/saving dictionarty")
-        # namen=str(input("Name:"))
-        # surnamen= str(input("Surname:"))
-        # addressn= str(input("Address:"))
-        # loginn=str(input("Login:"))
-        # passwordn=str(input("Password:"))
-        # employesss=Employee(namen,surnamen,addressn,loginn,passwordn)
-        # employees_list.append(employesss)
-        binary_file = open('workerlist.bin',mode='wb')
-        pickle_dump_update = pickle.dump(employesss, binary_file)
-        binary_file.close()
 
     @staticmethod
     def restlist():
+        """This is for resetting pickle with one manager."""
         mng1=Manager("Bill","Gates","USa","bill","bill","30000")
         binary_file = open('staff.bin',mode='wb')
         my_pickled_mary = pickle.dump(mng1, binary_file)
@@ -103,6 +85,9 @@ class Manager(Employee):
 
     @staticmethod
     def pickle_updated_list_to_file(x):
+        """Taking list as an arguments and iterates through its elements storing them into file. It use ab mode which
+        means that elemets are added(not just written which would save only last element from the list.
+         The data is unreadable by humans because of b (BINARY) mode. """
         # tym=list(Manager.read_from_pickle())
         # print("tim list before pop: {}".format(tym))
         # tym.pop()
@@ -112,10 +97,10 @@ class Manager(Employee):
             my_pickled_mary = pickle.dump(it, binary_file)
         binary_file.close()
 
-
     #by adding decorator I am creating static method for managers for serialisation
     @staticmethod
     def read_from_pickle():
+        """Yields generic iterable. Later I will convert it to list."""
         with open('staff.bin', 'rb') as fileForEmployees:
             try:
                 while True:
@@ -135,6 +120,8 @@ class Manager(Employee):
         my_pickled_mary = pickle.dump(who, binary_file)
         binary_file.close()
 
+'''Experimenting in the console part. It provides menu starting menu for adding, listing and deleting employees. 
+Choose 0 to skip it and go to man program which will load the Login widget.'''
 employees_list=[]
 def menu():
     print("*"*80)
@@ -192,12 +179,15 @@ while True:
         break
 
 class StaffTableWidget:
+    """Tkinter widgets. It uses TopLevel widget which open in separate windows."""
     def __init__(self,dad):
         self.dad=dad
         self._init_widget()
         self.populateTable()
         self.colors()
     def _init_widget(self):
+        """Drawing sub-widgets using pack geometry manager. Main part is treeView which is workers table.
+        The most important variable is staffTable which is list of employees from file."""
         self.staffList=list(Manager.read_from_pickle())
         self.staffTable=Toplevel(self.dad,width=20,height=100)
         self.staffCountLbl=Label(self.staffTable,text="Workers available")
@@ -251,13 +241,14 @@ class StaffTableWidget:
         # Initialize the counter
         self.i = 0
     def populateTable(self):
+        """Inserts values from list into treeView."""
         # self.staffList=list(Manager.read_from_pickle())
         # self.myTree.insert('','end',values=("Alfred","Kowlaksi","Prucha 7","alfi"))
         # self.myTree.insert('','end',values=("Jim","Rotten","nw16as","jim"))
         self.ind=0
         for entry in self.staffList:
             self.ind=self.ind+1
-            #I am using floor division to divide entries on odd and even ones tags.
+            #  I am using floor division to divide entries on odd and even ones tags.
             if self.ind%2!=0:
                 self.myTree.insert('','end',values=(self.ind,entry.__getattribute__("name"),entry.__getattribute__("surname"),
                                                 entry.__getattribute__("address"),entry.__getattribute__("login"),
@@ -267,10 +258,12 @@ class StaffTableWidget:
                                                     entry.__getattribute__("address"),entry.__getattribute__("login"),
                                                     entry.__getattribute__("salary")),tags = ('evenrow',))
     def colors(self):
+        """By using tags change the colors of rows."""
         self.myTree.tag_configure("evenrow",background='white',foreground='black')
         self.myTree.tag_configure("oddrow",background='grey',foreground='black')
     def delete(self):
-        selected_item = self.myTree.selection()[0] ## get selected item
+        """Removing selected row using delete method. Next calls Manager stactic method to update the list."""
+        selected_item = self.myTree.selection()[0]  # get selected item
         # print("select_item 1: {}".format(selected_item()[1]))
         for item in self.myTree.selection():
             self.item_text=self.myTree.item(item,"values")
@@ -285,6 +278,7 @@ class StaffTableWidget:
         Manager.pickle_updated_list_to_file(self.staffList)
         print("Deleting from table")
     def newEmp(self):
+        """Inserts new employee into table and calls updating static method from Mamager."""
         self.nname=self.entryName.get()
         self.nsurname=self.entrySurname.get()
         self.naddress=self.entryAddress.get()
@@ -305,7 +299,9 @@ class StaffTableWidget:
         Manager.pickle_updated_list_to_file(self.staffList)
         print("stafflist after adding new employee: {}".format(self.staffList))
         print("lenght of stafflist after adding new employee: {}".format(len(self.staffList)))
+    #  ToDo
     def newMng(self):
+        """Creates new manager (same as employee)"""
         pass
 
 
@@ -326,7 +322,9 @@ class StaffTableWidget:
         print("list from updatereC: {}".format(self.list))
 
 class Login:
+    """Login screen. This class is responsible for logging and checking credentials."""
     def __init__(self, parent):
+        """Initialising widget and setting styling theme using ttk funcion."""
         self.parent=parent
         parent.title("London Car Company Sales System")
         s=Style()
@@ -335,6 +333,9 @@ class Login:
         self._init_widget()
 
     def check_password(self):
+        """Use Tkinter variables to read values from entered credentials. Iterates through all objects in employee list to check if there a match,
+         between entered values, and attributes of the object retrieved by _getattribute__ function. If credentaials are valid the state of
+         managments buttons are changed. If object is instance of Managers all of the buttons are enabled."""
         self.username=""
         self.password=""
         self.username=self.us_name_to_function.get()
@@ -394,6 +395,7 @@ class Login:
         self.staffTable=StaffTableWidget(self.parent)
 
     def _init_widget(self):
+        """Weakly private method drawing Tkinter widgets. Grid geometry is used this time."""
         #Using Tkinter variables
         self.us_name_to_function=StringVar()
         self.us_pass_to_function=StringVar()
@@ -424,7 +426,7 @@ class Login:
         self.btnLogin.grid(row=5,column=1,sticky="w",padx=620)
 
 class FormMenu():
-    """This is the main form being displayed after operator has valid credentials after clicking Start Application button
+    """This is the main form being displayed after operator has valid credentials after clicking Start Application button.
     The main parts:
     -----------------------
     --++> Label that display LCC.
@@ -439,13 +441,13 @@ class FormMenu():
         self._init_widgets()
 
     def _init_widgets(self):
+        """Again weakly private method (I will be using similar pattern for all drawing classes below) for drawing. """
         # initiate toolbar
         self.toolbar = Frame(self.rootfrm)
         lbl0 = Label(self.toolbar, text='LCC').pack(side=LEFT)
         self.toolbar.pack(side='top', fill='x')
         style = Style()
         style.configure("BW.TLabel", foreground="white", background="black")
-
         # buttons frame
         # --------------------------------------------
         self.buttons = Frame(self.rootfrm, style="BW.TLabel")
@@ -481,10 +483,12 @@ class FormMenu():
         self.lblbackground['image'] = self.imgback
 
     def quit_click(self):
+        """Uses sys standard Python library for finishing the application."""
         print("Goodbay")
         sys.exit()
 
     def vehicle_click(self):
+        """Disabling and enabling corresponding buttons after clicking vehicle."""
         print("vehicles")
         self.btnvehicles['state'] = DISABLED
         self.btninvoices['state'] = DISABLED
@@ -496,6 +500,7 @@ class FormMenu():
         self.btncustomers['state'] = NORMAL
 
     def invoices_click(self):
+        """Disabling and enabling corresponding buttons after clicking invoice."""
         print("invoices")
         self.btnvehicles['state'] = DISABLED
         self.btninvoices['state'] = DISABLED
@@ -507,6 +512,7 @@ class FormMenu():
         self.btncustomers['state'] = NORMAL
 
     def customers_click(self):
+        """Disabling and enabling corresponding buttons after clicking customer."""
         print("customers")
         self.btnvehicles['state'] = DISABLED
         self.btninvoices['state'] = DISABLED
@@ -560,7 +566,7 @@ class FormVehicles:
         sql.session._delete_vehicle(int(self.mlb.item_selected[1]))
         self.mlb.delete(self.mlb.item_selected[0])
         self.mlb.item_selected = None
-
+    #ToDo
     def btn_find_click(self):
         fnd = self.entryfind.get()
 
@@ -581,14 +587,15 @@ class FormVehicles:
 # ---------------Form add vehicle class---------------------
 
 class FormAddvehicle:
-    ''' New vehicle, three labels,three textboxes,OK button are added'''
-
+    """New vehicle, three labels,three textboxes,OK button are added. TopLevel widget for adding,
+    deleting vehicles here and into sql."""
     def __init__(self):
         self.frame = Toplevel()
         self.frame.protocol("WM_DELETE_WINDOW", self.callback)  # user quit the screen
         self._init_widgets()
 
     def _init_widgets(self):
+        """Weakly private method for drawing Tkinter widgets."""
         self.label1 = Label(self.frame, text="Vehicle #")
         self.label1.grid(row=0, sticky=W)
         self.entry1 = Entry(self.frame)
@@ -613,12 +620,13 @@ class FormAddvehicle:
         self.btn_ok.grid(row=9, column=1, sticky=E)
 
     def btn_ok_click(self):
+        """Read values from entry widgets. Checks if every entry is filled and send it to sql.
+        Destroys the frame (this window) at the end."""
         items = (self.entry1.get(), self.entry3.get(), int(self.entry2.get()), self.entry4.get(), self.entry5.get())
         if '' in items:
             print('please fill everywhere')
             return 'break'
         sql.session._add_vehicle(items)
-
         self._okbtn_clicked = 1
         print('operator exits clicking ok button')
         self.frame.destroy()
@@ -629,8 +637,8 @@ class FormAddvehicle:
         self.frame.destroy()
 # AddVehicle for finishes here------------------
 
-# -----Invoice form-----------------------
 class FormInvoices:
+    """TopLevel widget for browsing, adding and editing invoices here in the GUI and into sql."""
     def __init__(self):
         self.frame = Toplevel()
         _init_toolbar(self)
