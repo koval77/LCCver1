@@ -76,6 +76,10 @@ class Manager(Employee):
         return cls(6)
 
     @staticmethod
+    def delfile():
+        open('staff.bin','w').close()
+
+    @staticmethod
     def restlist():
         """This is for resetting pickle with one manager."""
         mng1=Manager("Bill","Gates","USa","bill","bill","30000")
@@ -95,7 +99,7 @@ class Manager(Employee):
         for it in x:
             binary_file = open('staff.bin',mode='ab')
             my_pickled_mary = pickle.dump(it, binary_file)
-        binary_file.close()
+            binary_file.close()
 
     #by adding decorator I am creating static method for managers for serialisation
     @staticmethod
@@ -151,33 +155,33 @@ choice=""
 # Manager.append_object_to_file(clr1)
 # Manager.append_object_to_file(clr2)
 # filnam=('logins')
-while True:
-    menu()
-    print("type of manager.readfrompicke{}".format(Manager.read_from_pickle()))
-    choice=str(input("What is your choice?"))
-    if choice=="1":
-        print("Give new employee details: Name,Surname,Address,Login,Password,Salary")
-        namen=str(input("Name:"))
-        surnamen= str(input("Surname:"))
-        addressn= str(input("Address:"))
-        loginn=str(input("Login:"))
-        passwordn=str(input("Password:"))
-        salaryn=input("Salary:")
-        clerk_next=Employee(namen,surnamen,addressn,loginn,passwordn,salaryn)
-        employees_list.append(clerk_next)
-        Manager.pickle_updated_list_to_file(employees_list)
-    elif choice=="2":
-        tym=list(Manager.read_from_pickle())
-        print("tym list is: {}".format(tym))
-        for item in tym:
-            print(repr(item))
-            print(type(item))
-    elif choice=="3":
-        print("What is the login name of the person you want to erase?")
-        remove_employee()
-    else:
-        break
-
+# while True:
+#     menu()
+#     print("type of manager.readfrompicke{}".format(Manager.read_from_pickle()))
+#     choice=str(input("What is your choice?"))
+#     if choice=="1":
+#         print("Give new employee details: Name,Surname,Address,Login,Password,Salary")
+#         namen=str(input("Name:"))
+#         surnamen= str(input("Surname:"))
+#         addressn= str(input("Address:"))
+#         loginn=str(input("Login:"))
+#         passwordn=str(input("Password:"))
+#         salaryn=input("Salary:")
+#         clerk_next=Employee(namen,surnamen,addressn,loginn,passwordn,salaryn)
+#         employees_list.append(clerk_next)
+#         Manager.pickle_updated_list_to_file(employees_list)
+#     elif choice=="2":
+#         tym=list(Manager.read_from_pickle())
+#         print("tym list is: {}".format(tym))
+#         for item in tym:
+#             print(repr(item))
+#             print(type(item))
+#     elif choice=="3":
+#         print("What is the login name of the person you want to erase?")
+#         remove_employee()
+#     else:
+#         break
+# Manager.restlist()
 class StaffTableWidget:
     """Tkinter widgets. It uses TopLevel widget which open in separate windows."""
     def __init__(self,dad):
@@ -216,8 +220,8 @@ class StaffTableWidget:
         self.newMngbtn.pack(padx=5,side=TOP)
         self.delemplbtn=Button(self.forbuttons,text="Delete employee",command=self.delete)
         self.delemplbtn.pack(padx=5,side=TOP)
-        self.savebtn=Button(self.forbuttons,text="Save Changes",command=self.updateRec)
-        self.savebtn.pack(padx=5,side=TOP)
+        # self.savebtn=Button(self.forbuttons,text="Save Changes",command=self.updateRec)
+        # self.savebtn.pack(padx=5,side=TOP)
         self.myTree=Treeview(self.staffTable,columns=("ID","Name","Surname","Address","Login","Salary","Delete"))
         self.myTree.heading('#0')
         self.myTree.heading('#1', text='ID')
@@ -274,7 +278,8 @@ class StaffTableWidget:
         self.myTree.delete(selected_item)
         self.staffList.pop(self.indtodel)
         print("stafflist after pop: {}".format(self.staffList))
-        Manager.restlist()
+        # Manager.restlist()
+        Manager.delfile()
         Manager.pickle_updated_list_to_file(self.staffList)
         print("Deleting from table")
     def newEmp(self):
@@ -295,7 +300,8 @@ class StaffTableWidget:
                                                 empl.__getattribute__("address"),empl.__getattribute__("login"),
                                                 empl.__getattribute__("salary")),tags = ('evenrow',))
         self.staffList.append(empl)
-        Manager.restlist()
+        # Manager.restlist()
+        Manager.delfile()
         Manager.pickle_updated_list_to_file(self.staffList)
         print("stafflist after adding new employee: {}".format(self.staffList))
         print("lenght of stafflist after adding new employee: {}".format(len(self.staffList)))
@@ -305,21 +311,21 @@ class StaffTableWidget:
         pass
 
 
-    '''myTree.get_children gives the row id. what i did was get the row id from a loop, 
-    then use the id withing myTree.set(id) to get a dictionary of the values. and format the output from there.
-    '''
-    def updateRec(self):
-
-        self.list = " "
-        self.info = self.myTree.get_children()
-        for i in self.info:
-            self.info2 = self.myTree.set(i)
-            for a in self.info2:
-                print(a,":",self.info2[a])
-                self.list=self.list + a +": "+ self.info2[a]+'\n'
-
-        self.msg ="{} \n" .format(self.list)
-        print("list from updatereC: {}".format(self.list))
+    # '''myTree.get_children gives the row id. what i did was get the row id from a loop,
+    # then use the id withing myTree.set(id) to get a dictionary of the values. and format the output from there.
+    # '''
+    # def updateRec(self):
+    #
+    #     self.list = " "
+    #     self.info = self.myTree.get_children()
+    #     for i in self.info:
+    #         self.info2 = self.myTree.set(i)
+    #         for a in self.info2:
+    #             print(a,":",self.info2[a])
+    #             self.list=self.list + a +": "+ self.info2[a]+'\n'
+    #
+    #     self.msg ="{} \n" .format(self.list)
+    #     print("list from updatereC: {}".format(self.list))
 
 class Login:
     """Login screen. This class is responsible for logging and checking credentials."""
